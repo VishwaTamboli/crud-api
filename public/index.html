@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Todo List</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: #172033;
+        background: #f3f6fb;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; min-height: 100vh; padding: 48px 20px; }
+      main { max-width: 720px; margin: 0 auto; }
+      h1 { margin: 0 0 8px; font-size: 2rem; }
+      .subtitle { margin: 0 0 24px; color: #63708a; }
+      .card { padding: 24px; background: #fff; border: 1px solid #e3e8f1; border-radius: 14px; box-shadow: 0 8px 30px #24304b0a; }
+      label { display: block; margin: 16px 0 7px; font-weight: 600; font-size: .92rem; }
+      input, textarea { width: 100%; padding: 11px 12px; border: 1px solid #cbd3e1; border-radius: 8px; font: inherit; }
+      textarea { min-height: 100px; resize: vertical; }
+      input:focus, textarea:focus { outline: 3px solid #4263eb26; border-color: #4263eb; }
+      .buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+      button { padding: 10px 17px; border: 0; border-radius: 8px; color: white; background: #4263eb; font: inherit; font-weight: 600; cursor: pointer; }
+      button:hover { filter: brightness(.94); }
+      button.secondary { background: #53627a; }
+      button.danger { background: #d9485f; }
+      #status { min-height: 24px; margin: 18px 0 0; color: #34425c; }
+      #status.error { color: #c92a2a; }
+      .results { margin-top: 22px; }
+      .todo { padding: 14px 0; border-top: 1px solid #e8ecf3; overflow-wrap: anywhere; }
+      .todo strong { display: block; margin-bottom: 4px; }
+      .todo-description { white-space: pre-wrap; }
+      .todo small { display: block; margin-top: 7px; color: #63708a; }
+      @media (max-width: 520px) { body { padding: 28px 14px; } .card { padding: 18px; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Todo List</h1>
+      <p class="subtitle">Create and manage your todos using the CRUD API.</p>
+      <section class="card" aria-label="Todo details">
+        <label for="title">Title</label>
+        <input id="title" maxlength="120" placeholder="e.g. Buy groceries" />
+        <label for="description">Description</label>
+        <textarea id="description" maxlength="500" placeholder="Add a few details (optional)"></textarea>
+        <div class="buttons">
+          <button id="create">Create</button>
+          <button id="read" class="secondary">Read</button>
+          <button id="update">Update</button>
+          <button id="delete" class="danger">Delete</button>
+        </div>
+        <p id="status" role="status" aria-live="polite"></p>
+        <div id="results" class="results"></div>
+      </section>
+    </main>
+    <script>
+      const titleInput = document.querySelector("#title");
+      const descriptionInput = document.querySelector("#description");
+      const status = document.querySelector("#status");
+      const results = document.querySelector("#results");
+      let selectedTodoId = null;
+
+      function showStatus(message, isError = false) {
+        status.textContent = message;
+        status.classList.toggle("error", isError);
+      }
+
+      function renderTodos(todos) {
+        results.replaceChildren();
+        for (const todo of (Array.isArray(todos) ? todos : [todos])) {
+          const card = document.createElement("article");
+          card.className = "todo";
+          const title = document.createElement("strong");
+          title.textContent = todo.title;
+          const description = document.createElement("div");
+          description.className = "todo-description";
+          description.textContent = todo.description || "No description";
+          card.append(title, description);
+          card.addEventListener("click", () => {
+            selectedTodoId = todo.id;
+            titleInput.value = todo.title;
+            descriptionInput.value = "";
+            descriptionInput.placeholder = "Add details without replacing the current description";
+            showStatus(`Selected "${todo.title}".`);
+          });
+          results.append(card);
+        }
+      }
+
+      async function request(path, options = {}) {
+        const response = await fetch(path, {
+          ...options,
+          headers: { "Content-Type": "application/json", ...options.headers },
+        });
+        const payload = response.status === 204 ? null : await response.json();
+        if (!response.ok) {
+          const message = Array.isArray(payload.message)
+            ? payload.message.join(", ")
+            : payload.message || "Request failed";
+          throw new Error(message);
+        }
+        return payload;
+      }
+
+      async function run(action) {
+        showStatus("");
+        try {
+          let todo;
+          if (action === "create") {
+            todo = await request("/todos", {
+              method: "POST",
+              body: JSON.stringify({
+                title: titleInput.value.trim(),
+                description: descriptionInput.value.trim(),
+              }),
+            });
+            selectedTodoId = null;
+            titleInput.value = "";
+            descriptionInput.value = "";
+            descriptionInput.placeholder = "Add a few details (optional)";
+            renderTodos(await request("/todos"));
+            showStatus("Todo created.");
+          } else if (action === "read") {
+            todo = await request("/todos");
+            renderTodos(todo);
+            showStatus(Array.isArray(todo) ? `${todo.length} todo(s) found.` : "Todo loaded.");
+          } else if (action === "update") {
+            if (!selectedTodoId) throw new Error("Select a todo from the list to update.");
+            const title = titleInput.value.trim();
+            const additionalDetails = descriptionInput.value.trim();
+            if (!title && !additionalDetails) {
+              throw new Error("Enter a title or description.");
+            }
+            todo = await request(`/todos/${encodeURIComponent(selectedTodoId)}`, {
+              method: "PATCH",
+              body: JSON.stringify({
+                ...(title ? { title } : {}),
+                ...(additionalDetails ? { additionalDetails } : {}),
+              }),
+            });
+            titleInput.value = todo.title;
+            descriptionInput.value = "";
+            renderTodos(await request("/todos"));
+            showStatus("Todo updated.");
+          } else {
+            if (!selectedTodoId) throw new Error("Select a todo from the list to delete.");
+            todo = await request(`/todos/${encodeURIComponent(selectedTodoId)}`, { method: "DELETE" });
+            selectedTodoId = null;
+            titleInput.value = "";
+            descriptionInput.value = "";
+            descriptionInput.placeholder = "Add a few details (optional)";
+            renderTodos(await request("/todos"));
+            showStatus(`Deleted "${todo.title}".`);
+          }
+        } catch (error) {
+          showStatus(error.message, true);
+        }
+      }
+
+      for (const action of ["create", "read", "update", "delete"]) {
+        document.querySelector(`#${action}`).addEventListener("click", () => run(action));
+      }
+    </script>
+  </body>
+</html>

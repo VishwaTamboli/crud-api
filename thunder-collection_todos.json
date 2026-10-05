@@ -1,0 +1,85 @@
+{
+  "client": "Thunder Client",
+  "collectionName": "Todo List API",
+  "dateExported": "2026-10-05T00:00:00.000Z",
+  "version": "1.2",
+  "folders": [],
+  "requests": [
+    {
+      "_id": "todo-create",
+      "colId": "todo-crud-api",
+      "containerId": "",
+      "name": "Create todo",
+      "url": "http://localhost:3000/todos",
+      "method": "POST",
+      "sortNum": 10000,
+      "created": "2026-10-05T00:00:00.000Z",
+      "modified": "2026-10-05T00:00:00.000Z",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"title\": \"Buy groceries\",\n  \"description\": \"Milk, bread, and fruit\"\n}"
+      }
+    },
+    {
+      "_id": "todo-read-all",
+      "colId": "todo-crud-api",
+      "containerId": "",
+      "name": "Read all todos",
+      "url": "http://localhost:3000/todos",
+      "method": "GET",
+      "sortNum": 20000,
+      "created": "2026-10-05T00:00:00.000Z",
+      "modified": "2026-10-05T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "body": { "type": "none", "raw": "" }
+    },
+    {
+      "_id": "todo-read-one",
+      "colId": "todo-crud-api",
+      "containerId": "",
+      "name": "Read one todo (replace ID)",
+      "url": "http://localhost:3000/todos/REPLACE_WITH_TODO_ID",
+      "method": "GET",
+      "sortNum": 30000,
+      "created": "2026-10-05T00:00:00.000Z",
+      "modified": "2026-10-05T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "body": { "type": "none", "raw": "" }
+    },
+    {
+      "_id": "todo-update",
+      "colId": "todo-crud-api",
+      "containerId": "",
+      "name": "Update todo (replace ID)",
+      "url": "http://localhost:3000/todos/REPLACE_WITH_TODO_ID",
+      "method": "PATCH",
+      "sortNum": 40000,
+      "created": "2026-10-05T00:00:00.000Z",
+      "modified": "2026-10-05T00:00:00.000Z",
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"title\": \"Buy groceries today\",\n  \"additionalDetails\": \"Also pick up coffee\"\n}"
+      }
+    },
+    {
+      "_id": "todo-delete",
+      "colId": "todo-crud-api",
+      "containerId": "",
+      "name": "Delete todo (replace ID)",
+      "url": "http://localhost:3000/todos/REPLACE_WITH_TODO_ID",
+      "method": "DELETE",
+      "sortNum": 50000,
+      "created": "2026-10-05T00:00:00.000Z",
+      "modified": "2026-10-05T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "body": { "type": "none", "raw": "" }
+    }
+  ]
+}
