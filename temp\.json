@@ -1,0 +1,27 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "ollama/qwen3.5:4b",
+  "provider": {
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama (local)",
+      "options": { "baseURL": "http://localhost:11434/v1" },
+      "models": { "qwen3.5:4b": { "name": "Qwen 3.5 4B" } }
+    }
+  },
+  "permission": {
+    "bash": {
+      "*": "ask",
+      "npm test*": "allow",
+      "npm run *": "allow",
+      "node *": "allow",
+      "ls *": "allow",
+      "cat *": "allow",
+      "git status*": "allow",
+      "git diff*": "allow",
+      "git log*": "allow",
+      "rm -rf *": "deny",
+      "git push*": "deny"
+    }
+  }
+}
