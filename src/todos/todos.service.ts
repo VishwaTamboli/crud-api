@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-import { Todo } from './todo.interface';
+import { Todo, TodoPriority } from './todo.interface';
 
 @Injectable()
 export class TodosService {
@@ -14,6 +14,7 @@ export class TodosService {
       id: randomUUID(),
       ...createTodoDto,
       description: createTodoDto.description ?? '',
+      priority: createTodoDto.priority ?? 'medium',
       createdAt: now,
       updatedAt: now,
     };

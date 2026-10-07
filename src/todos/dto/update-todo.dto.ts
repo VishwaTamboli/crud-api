@@ -1,4 +1,5 @@
-import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsOptional, IsString, MaxLength, MinLength, IsIn } from 'class-validator';
+import { TodoPriority } from '../todo.interface';
 
 export class UpdateTodoDto {
   @IsOptional()
@@ -17,4 +18,9 @@ export class UpdateTodoDto {
   @MinLength(1)
   @MaxLength(500)
   additionalDetails?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsIn([ 'low', 'medium', 'high' ])
+  priority?: TodoPriority;
 }

@@ -16,7 +16,7 @@ Open [http://localhost:3000](http://localhost:3000) for the Todo List frontend.
 | Method | Endpoint | Description |
 | --- | --- | --- |
 | `POST` | `/todos` | Create a todo |
-| `GET` | `/todos` | Read all todos |
+| `GET` | `/todos` | Read all todos | 
 | `GET` | `/todos/:id` | Read one todo |
 | `PATCH` | `/todos/:id` | Update a todo |
 | `DELETE` | `/todos/:id` | Delete a todo |

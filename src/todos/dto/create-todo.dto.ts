@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsIn, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { TodoPriority } from '../todo.interface';
 
 export class CreateTodoDto {
   @IsString()
@@ -10,4 +11,9 @@ export class CreateTodoDto {
   @IsString()
   @MaxLength(500)
   description?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsIn([ 'low', 'medium', 'high' ])
+  priority?: TodoPriority;
 }
